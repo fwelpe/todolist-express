@@ -1,22 +1,47 @@
 var express = require('express');
-const fs = require('fs');
-var cors = require('cors')
+var fs = require('fs');
+var cors = require('cors');
+var jwt = require('jsonwebtoken');
+var ejwt = require('express-jwt');
 
 var app = express();
+var secret = Math.random().toString();
+var users = [{ user: 'root', psw: 'ewe4' }];
 
 app.use(cors())
 app.use(express.json());
 
-app.get('/', function (req, res) {
+const genToken = (credentianls) => jwt.sign(credentianls, secret);
+
+app.get('/', ejwt({ secret }), function (req, res) {
 	const raw = fs.readFileSync('db.json');
 	res.send(raw);
 });
 
-app.post('/write', function (req, res) {
+app.post('/login', function (req, res) {
+	const { username, password } = req.body;
+	// console.log(req.body)
+	const authentified = users.reduce((acc, { user, psw }) => {
+		if (acc)
+			return acc;
+		if (username === user && password === psw)
+			return true;
+	}, false);
+	if (authentified) {
+		const tkn = genToken({ username, password });
+		res.send(tkn);
+		// console.log(tkn);
+	}
+	else
+		res.sendStatus(401);
+});
+
+app.post('/write', ejwt({ secret }), function (req, res) {
 	fs.writeFileSync('db.json', JSON.stringify(req.body));
+	res.sendStatus(200);
 });
 
 const port = 3001;
 app.listen(port, function () {
-	console.log('Example app listening on port', port);
+	console.log('App listening on port', port);
 });
