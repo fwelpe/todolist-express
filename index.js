@@ -6,15 +6,17 @@ var ejwt = require('express-jwt');
 
 var app = express();
 var secret = Math.random().toString();
-var users = [{ user: 'root', psw: 'ewe4' }];
+var users = [{ user: 'root', psw: 'ewe4' }, {user: 'qwe', psw: 'asd'}];
 
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
 const genToken = (credentianls) => jwt.sign(credentianls, secret);
 
 app.get('/', ejwt({ secret }), function (req, res) {
-	const raw = fs.readFileSync('db.json');
+	const name = './' + req.user.username + 'db.json';
+	console.log(name);
+	const raw = fs.existsSync(name) ? fs.readFileSync(name) : '{}';
 	res.send(raw);
 });
 
@@ -37,7 +39,8 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/write', ejwt({ secret }), function (req, res) {
-	fs.writeFileSync('db.json', JSON.stringify(req.body));
+	const name = './' + req.user.username + 'db.json';
+	fs.writeFileSync(name, JSON.stringify(req.body));
 	res.sendStatus(200);
 });
 
