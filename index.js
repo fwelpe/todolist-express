@@ -15,7 +15,6 @@ const genToken = (credentianls) => jwt.sign(credentianls, secret);
 
 app.get('/', ejwt({ secret }), function (req, res) {
 	const name = './' + req.user.username + 'db.json';
-	console.log(name);
 	const raw = fs.existsSync(name) ? fs.readFileSync(name) : '{}';
 	res.send(raw);
 });
