@@ -21,7 +21,6 @@ app.get('/', ejwt({ secret }), function (req, res) {
 
 app.post('/login', function (req, res) {
 	const { username, password } = req.body;
-	// console.log(req.body)
 	const authentified = users.reduce((acc, { user, psw }) => {
 		if (acc)
 			return acc;
@@ -31,7 +30,6 @@ app.post('/login', function (req, res) {
 	if (authentified) {
 		const tkn = genToken({ username, password });
 		res.send(tkn);
-		// console.log(tkn);
 	}
 	else
 		res.sendStatus(401);
