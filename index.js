@@ -6,36 +6,44 @@ var ejwt = require('express-jwt');
 
 var app = express();
 var secret = Math.random().toString();
-var users = [{ user: 'root', psw: 'ewe4' }, {user: 'qwe', psw: 'asd'}];
+var users = [{user: 'root', psw: 'ewe4'}, {user: 'qwe', psw: 'asd'}, {user: 'new', psw: 'p'}];
 
 app.use(cors());
 app.use(express.json());
 
 const genToken = (credentianls) => jwt.sign(credentianls, secret);
 
-app.get('/', ejwt({ secret }), function (req, res) {
+app.get('/', ejwt({secret}), function (req, res) {
 	const name = './' + req.user.username + 'db.json';
 	const raw = fs.existsSync(name) ? fs.readFileSync(name) : '{}';
 	res.send(raw);
 });
 
 app.post('/login', function (req, res) {
-	const { username, password } = req.body;
-	const authentified = users.reduce((acc, { user, psw }) => {
+	const {username, password} = req.body;
+	const authentified = users.reduce((acc, {user, psw}) => {
 		if (acc)
 			return acc;
 		if (username === user && password === psw)
 			return true;
 	}, false);
 	if (authentified) {
-		const tkn = genToken({ username, password });
+		const tkn = genToken({username, password});
 		res.send(tkn);
-	}
-	else
+	} else
 		res.sendStatus(401);
 });
 
-app.post('/write', ejwt({ secret }), function (req, res) {
+app.post('/del', ejwt({secret}), function (req, res) {
+	const name = './' + req.user.username + 'db.json';
+	const raw = fs.existsSync(name) ? fs.readFileSync(name) : '{}';
+	let obj = JSON.parse(raw);
+	delete obj[req.body.id];
+	fs.writeFileSync(name, JSON.stringify(obj));
+	res.sendStatus(200);
+});
+
+app.post('/write', ejwt({secret}), function (req, res) {
 	const name = './' + req.user.username + 'db.json';
 	fs.writeFileSync(name, JSON.stringify(req.body));
 	res.sendStatus(200);
