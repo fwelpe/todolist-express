@@ -6,12 +6,12 @@ var ejwt = require('express-jwt');
 
 var app = express();
 var secret = Math.random().toString();
-var users = [{user: 'root', psw: 'ewe4'}, {user: 'qwe', psw: 'asd'}, {user: 'new', psw: 'p'}];
+var users = [{user: 'root', psw: 'ewe4'}, {user: 'qwe', psw: 'asd'}, {user: 'new', psw: 'p'}, {admin: 'admin'}];
 
 app.use(cors());
 app.use(express.json());
 
-const genToken = (credentianls) => jwt.sign(credentianls, secret);
+const genToken = (credentials) => jwt.sign(credentials, secret);
 
 app.get('/', ejwt({secret}), function (req, res) {
 	const name = './' + req.user.username + 'db.json';
