@@ -6,7 +6,7 @@ var ejwt = require('express-jwt');
 
 var app = express();
 var secret = Math.random().toString();
-var users = [{user: 'root', psw: 'ewe4'}, {user: 'qwe', psw: 'asd'}, {user: 'new', psw: 'p'}, {admin: 'admin'}];
+var users = [{user: 'root', psw: 'ewe4'}, {user: 'qwe', psw: 'asd'}, {user: 'new', psw: 'p'}];
 
 app.use(cors());
 app.use(express.json());
